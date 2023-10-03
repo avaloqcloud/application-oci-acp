@@ -1,146 +1,85 @@
-// Copyright (c) 2023 Avaloq and/or its affiliates.
-// Licensed under the Apache 2.0 license shown at https://www.apache.org/licenses/LICENSE-2.0.
+resource "oci_core_instance" "acp_vm" {
+  availability_domain = var.availability_domain
+  compartment_id      = var.compartment_id
+  display_name        = "${var.sandbox_name}-sandbox-acp"
+  freeform_tags       = {"sandbox-name"="${var.sandbox_name}"}
+  shape               = "VM.Standard.E4.Flex"
 
-// readme.md created with https://terraform-docs.io/: terraform-docs markdown --sort=false ./ > ./readme.md
+  shape_config {
+    memory_in_gbs = 48
+    ocpus = 6
+  }
+ 
+  create_vnic_details {
+    subnet_id        = var.private_subnet_id
+    display_name     = "${var.sandbox_name}-sandbox-acp"
+    assign_public_ip = false
+    hostname_label   = "sandbox-acp"
+    freeform_tags    = {"sandbox-name"="${var.sandbox_name}"}
+  }
+ 
+  source_details {
+    source_type = "image"
+    source_id = "ocid1.image.oc1.eu-zurich-1.aaaaaaaadugtpwjc3ow46zisu4z35whv6xrvpxhlnkc7lupi3cu7hw57xica"
+    boot_volume_size_in_gbs = "300"
+  } 
+  
+  metadata = {
+    ssh_authorized_keys = var.ssh_authorized_key
+  
+  }
+  timeouts {
+    create = "60m"
+  }
+}
 
-// --- configuration --- //
-module "configuration" {
-  source         = "github.com/avaloqcloud/acf_ctl_config"
-  providers = {oci = oci.home}
-  setting = {
-    compartment_id = var.compartment_ocid
-    controls = flatten(compact([
-      var.cls,
-      var.cis == true ? "cis" : "",
-      var.pci == true ? "pci" : "",
-      var.c5  == true ? "c5" : ""
-    ]))
-    home           = var.region
-    label    = format(
-      "%s%s%s",
-      lower(substr(var.org, 0, 3)),
-      lower(substr(var.prj, 0, 2)),
-      lower(substr(var.stg, 0, 3)),
-    )
-    location   = var.loc
-    name       = lower("${var.org}_${var.prj}_${var.stg}")
-    owner      = var.own
-    parent_id  = var.prt
-    services   = local.osn[var.osn]
-    stage      = local.stage[var.stg]
-    source     = var.src
-    scope      = flatten(compact([
-      var.acp    == true ? "acp" : "",
-      var.client == true ? "client" : "",
-      var.capi   == true ? "capi" : ""
-    ]))
-    tenancy_id = var.tenancy_ocid
-    user_id    = var.current_user_ocid
+data "template_file" "config" {
+  depends_on = [oci_core_instance.acp_vm]
+  template = "${file("${path.module}/templates/config.tpl")}"
+  vars = {
+    acp_ip_address  = oci_core_instance.acp_vm.private_ip
   }
 }
-output "configuration" {
-  value = {for resource, parameter in module.configuration : resource => parameter}
-}
-// --- configuration --- //
 
-/*/ --- operation controls --- //
-module "resident" {
-  source     = "github.com/avaloqcloud/acf_ctl_config"
-  depends_on = [module.configuration]
-  providers  = {oci = oci.home}
-  schema = {
-    # Enable compartment delete on destroy. If true, compartment will be deleted when `terraform destroy` is executed; If false, compartment will not be deleted on `terraform destroy` execution
-    enable_delete = var.stage != "PRODUCTION" ? true : false
-    # Reference to the deployment root. The service is setup in an encapsulating child compartment
-    parent_id     = var.tenancy_ocid
-    user_id       = var.current_user_ocid
-  }
-  config = {
-    tenancy = module.configuration.tenancy
-    service = module.configuration.service
-  }
+resource "null_resource" "copy_config" {
+  depends_on = [data.template_file.config, oci_core_instance.acp_vm]
+  provisioner "file" {
+    connection {
+      agent               = false
+      timeout             = "10m"
+      host                = oci_core_instance.acp_vm.private_ip
+      user                = "opc"
+      private_key         = var.ssh_private_key
+      bastion_host        = var.bastion_public_ip
+      bastion_private_key = var.ssh_private_key
+      bastion_user        = "opc"
+    }
+  
+    content = "${data.template_file.config.rendered}"
+    destination = "~/config.sh"
+  } 
 }
-output "resident" {
-  value = {for resource, parameter in module.resident : resource => parameter}
-}
-// --- operation controls --- //
 
-// --- wallet configuration --- //
-module "encryption" {
-  source     = "./assets/encryption"
-  depends_on = [module.configuration, module.resident]
-  providers  = {oci = oci.service}
-  for_each   = {for wallet in local.wallets : wallet.name => wallet}
-  schema = {
-    create = var.create_wallet
-    type   = var.wallet == "SOFTWARE" ? "DEFAULT" : "VIRTUAL_PRIVATE"
+resource "null_resource" "configure" {
+  depends_on = [null_resource.copy_config]
+  provisioner "remote-exec" {
+    connection {
+      agent               = false
+      timeout             = "10m"
+      host                = oci_core_instance.acp_vm.private_ip
+      user                = "opc"
+      private_key         = var.ssh_private_key
+      bastion_host        = var.bastion_public_ip
+      bastion_private_key = var.ssh_private_key
+      bastion_user        = "opc"
+    }
+    inline = [
+      "chmod 755 ~/config.sh",
+      "sudo /home/opc/config.sh > /home/opc/config.log",
+      "sudo shutdown -r +2"
+    ]
   }
-  config = {
-    tenancy    = module.configuration.tenancy
-    service    = module.configuration.service
-    encryption = module.configuration.encryption[each.key]
-  }
-  assets = {
-    resident   = module.resident
-  }
-}
-output "encryption" {
-  value = {for resource, parameter in module.encryption : resource => parameter}
-  sensitive = true
-}
-// --- wallet configuration --- /*/
-
-// --- network configuration --- //
-module "network" {
-  source     = "github.com/avaloqcloud/acf_res_net"
-  depends_on = [module.configuration]# module.resident] #module.encryption,
-  # providers = {oci = oci.service}
-  # for_each  = {for zone in local.zones : zone.name => zone}
-
-  settings = {
-    compartment_id    = module.configuration.oci_core_vcn.zone_private.compartment_id
-    name              = module.configuration.oci_core_vcn.zone_private.name
-    description       = module.configuration.oci_core_vcn.zone_private.description
-    cidr_blocks       = module.configuration.oci_core_vcn.zone_private.cidr_blocks
-  }
-  # config = {
-  #   tenancy = module.configuration.tenancy
-  #   service = module.configuration.service
-  #   network = module.configuration.network[each.key]
-  # }
-  # assets = {
-  #   encryption = module.encryption["main"]
-  #   resident   = module.resident
-  # }
-}
-output "network" {
-  value = {for resource, parameter in module.network : resource => parameter}
-}
-// --- network configuration --- //
-
-/*/ --- database creation --- //
-module "database" {
-  source     = "./assets/database"
-  depends_on = [module.configuration, module.resident, module.network, module.encryption]
-  providers  = {oci = oci.service}
-  schema = {
-    class    = var.class
-    create   = var.create_adb
-    password = var.create_wallet == false ? "RANDOM" : "VAULT"
-  }
-  config = {
-    tenancy  = module.configuration.tenancy
-    service  = module.configuration.service
-    database = module.configuration.database
-  }
-  assets = {
-    encryption = module.encryption["main"]
-    network    = module.network["core"]
-    resident   = module.resident
+  provisioner "local-exec" {
+    command = "sleep 60s"
   }
 }
-output "database" {
-  value = {for resource, parameter in module.database : resource => parameter}
-  sensitive = true
-}
-// --- database creation --- /*/
