@@ -1,5 +1,5 @@
 # Required by the OCI Provider
-variable "compartment_id" {
+variable "compartment_ocid" {
   type =        string
   description = "Compartment OCID"
 }
@@ -30,7 +30,15 @@ variable "ssh_private_key" {
   description = "SSH Private key in PEM format. The private key will be used for connecting to the acp VM over SSH"
 }
 
-variable "sandbox_name" {
+variable "display_name" {
   type = string
   description = "Name of the sandbox"
+}
+
+variable "instance_image" {
+  type = string
+}
+
+variable "instance_shape" {
+  type = string
 }
