@@ -13,7 +13,7 @@ resource "oci_core_instance" "acp_vm" {
   create_vnic_details {
     subnet_id        = var.private_subnet_id
     display_name     = "${var.sandbox_name}-sandbox-acp"
-    assign_public_ip = false
+    assign_public_ip = true
     hostname_label   = "sandbox-acp"
     freeform_tags    = {"sandbox-name"="${var.sandbox_name}"}
   }
@@ -26,60 +26,9 @@ resource "oci_core_instance" "acp_vm" {
   
   metadata = {
     ssh_authorized_keys = var.ssh_authorized_key
-  
+    user_data = "${base64encode(file("${path.module}/scripts/config.sh"))}"
   }
   timeouts {
     create = "60m"
-  }
-}
-
-data "template_file" "config" {
-  depends_on = [oci_core_instance.acp_vm]
-  template = "${file("${path.module}/templates/config.tpl")}"
-  vars = {
-    acp_ip_address  = oci_core_instance.acp_vm.private_ip
-  }
-}
-
-resource "null_resource" "copy_config" {
-  depends_on = [data.template_file.config, oci_core_instance.acp_vm]
-  provisioner "file" {
-    connection {
-      agent               = false
-      timeout             = "10m"
-      host                = oci_core_instance.acp_vm.private_ip
-      user                = "opc"
-      private_key         = var.ssh_private_key
-      bastion_host        = var.bastion_public_ip
-      bastion_private_key = var.ssh_private_key
-      bastion_user        = "opc"
-    }
-  
-    content = "${data.template_file.config.rendered}"
-    destination = "~/config.sh"
-  } 
-}
-
-resource "null_resource" "configure" {
-  depends_on = [null_resource.copy_config]
-  provisioner "remote-exec" {
-    connection {
-      agent               = false
-      timeout             = "10m"
-      host                = oci_core_instance.acp_vm.private_ip
-      user                = "opc"
-      private_key         = var.ssh_private_key
-      bastion_host        = var.bastion_public_ip
-      bastion_private_key = var.ssh_private_key
-      bastion_user        = "opc"
-    }
-    inline = [
-      "chmod 755 ~/config.sh",
-      "sudo /home/opc/config.sh > /home/opc/config.log",
-      "sudo shutdown -r +2"
-    ]
-  }
-  provisioner "local-exec" {
-    command = "sleep 60s"
   }
 }

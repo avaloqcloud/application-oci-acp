@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # Read the new IP address from a variable
-new_ip="${acp_ip_address}"
+#new_ip="${acp_ip_address}"
+new_ip=$(hostname -I | awk '{print $1}')
 
 # File path
 file_path="/var/opt/oracle/listener.ora"
@@ -11,5 +12,6 @@ escaped_ip=$(echo "$new_ip" | sed 's/\./\\./g')
 
 # Replace the old IP address with the new one using sed
 sed -i "s/\(HOST=\s*\)[0-9\.]\+\(.*\)/\1$escaped_ip\2/" "$file_path"
+sudo systemctl restart acp
 
 
