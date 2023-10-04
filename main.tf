@@ -1,7 +1,7 @@
 resource "oci_core_instance" "acp_vm" {
   availability_domain = var.availability_domain
   compartment_id      = var.compartment_ocid
-  display_name        = "${var.display_name}-sandbox-acp"
+  display_name        = "${var.display_name}-acp"
   #freeform_tags       = {"sandbox-name"="${var.display_name}"}
   shape               = var.instance_shape
 
