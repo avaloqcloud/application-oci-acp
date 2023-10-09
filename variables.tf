@@ -30,3 +30,17 @@ variable "instance_image" {
 variable "instance_shape" {
   type = string
 }
+
+variable "instance_config" {
+  type = object({
+    ocpus = string
+    memory_in_gbs = string
+    boot_volume_size_in_gbs = string
+  })
+
+  default = {
+    ocpu                 = "6"
+    memory_in_gbs        = "48"
+    boot_volume_size_in_gbs = "300"
+  }
+}

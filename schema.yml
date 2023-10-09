@@ -24,6 +24,10 @@ variableGroups:
       - subnetCompartment
       - private_subnet_id
 
+  - title: "ACP Instnce Configuration"
+    variables:     
+      - instance_config.ocpus
+
 variables:
 
   region:
@@ -102,4 +106,9 @@ variables:
       compartmentId: ${vcnCompartment}
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
+  
+  instance_config.ocpus:
+    type: number
+    default: 6
+    minimum: 1
 
