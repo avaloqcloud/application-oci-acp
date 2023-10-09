@@ -13,7 +13,10 @@ escaped_ip=$(echo "$new_ip" | sed 's/\./\\./g')
 # Replace the old IP address with the new one using sed
 sed -i "s/\(HOST=\s*\)[0-9a-z\.]\+\(.*\)/\1$escaped_ip\2/" "$file_path"
 
-su - oracle << 'RUN_AS_ORACLE'
-/home/oracle/aaa/bin/aaadb.ksh -s "$(grep -E -o "SID_NAME= [a-z0-9]+" /var/opt/oracle/listener.ora | sed -r "s/SID_NAME= //")" -c restart
-/home/oracle/aaa/bin/aaadb.ksh -s "$(grep -E -o "SID_NAME= [a-z0-9]+" /var/opt/oracle/listener.ora | sed -r "s/SID_NAME= //")" -c start -o listener
+# SID Name
+sid_name=$(grep -E  -o "SID_NAME= [a-z0-9]+" /var/opt/oracle/listener.ora  | sed -r "s/SID_NAME= //")
+
+su - oracle << RUN_AS_ORACLE
+/home/oracle/aaa/bin/aaadb.ksh -s "${sid_name}" -c restart
+/home/oracle/aaa/bin/aaadb.ksh -s "${sid_name}" -c start -o listener
 RUN_AS_ORACLE
