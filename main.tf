@@ -13,7 +13,7 @@ resource "oci_core_instance" "acp_vm" {
   create_vnic_details {
     subnet_id        = var.private_subnet_id
     display_name     = "${var.display_name}-acp"
-    assign_public_ip = true
+    assign_public_ip = false
     hostname_label   = "${var.display_name}-acp"
     #freeform_tags    = {"sandbox-name"="${var.sandbox_name}"}
   }
