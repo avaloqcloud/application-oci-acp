@@ -107,8 +107,8 @@ variables:
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
   
-  instance_config.ocpus:
-    type: number
-    default: 6
-    minimum: 1
+  # instance_config.ocpus:
+  #   type: number
+  #   default: 6
+  #   minimum: 1
 

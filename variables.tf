@@ -39,7 +39,7 @@ variable "instance_config" {
   })
 
   default = {
-    ocpu                 = "6"
+    ocpus                 = "6"
     memory_in_gbs        = "48"
     boot_volume_size_in_gbs = "300"
   }
