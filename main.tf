@@ -1,4 +1,3 @@
-
 module "acf_resource_compute" {
     source = "./acf_resource_compute"
     compartment_ocid        = var.compartment_ocid
