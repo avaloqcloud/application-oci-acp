@@ -11,16 +11,17 @@ variable "availability_domain" {
 
 variable "private_subnet_id" {
   type =        string
-  description = "OCID of private subnet in which to create a Bastion host"
+  description = "OCID of private subnet in which to create a instance"
 }
 
 variable "ssh_authorized_key" {
   type =        string
   description = "RSA public key in PEM format. It will added as authorized key for remote connection over SSH"
 }
+
 variable "display_name" {
   type = string
-  description = "Name of the sandbox"
+  description = "Name of the ACP instance"
 }
 
 variable "instance_image" {
