@@ -1,3 +1,3 @@
 output "private_ip" {
-  value = oci_core_instance.acp_vm.private_ip
+  value = module.acf_resource_compute.instance_private_ip
 }

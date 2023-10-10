@@ -7,7 +7,6 @@ locale: "en"
 variableGroups:
   - title: "OCI(Oracle Cloud Infrastructure) details"
     variables:
-      - region
       - compartment_ocid
       - current_user_ocid
 
@@ -24,13 +23,11 @@ variableGroups:
       - subnetCompartment
       - private_subnet_id
 
-variables:
+  - title: "ACP Instnce Configuration"
+    variables:     
+      - instance_config.ocpus
 
-  region:
-    type: oci:identity:region:name
-    required: true
-    description: "Select the OCI region for instance creation"
-    title: "Region"
+variables:
   compartment_ocid:
     type: oci:identity:compartment:id
     required: true
@@ -102,4 +99,9 @@ variables:
       compartmentId: ${vcnCompartment}
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
+  
+  # instance_config.ocpus:
+  #   type: number
+  #   default: 6
+  #   minimum: 1
 
