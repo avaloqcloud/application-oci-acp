@@ -1,4 +1,4 @@
-module "acf_resource_compute" {
+module "acp" {
     source = "./acf_resource_compute"
     #source = "https://github.com/avaloqcloud/acf_resource_compute"
     compartment_ocid        = var.compartment_ocid
