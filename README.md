@@ -46,5 +46,5 @@ The code provides a reusuable Terraform module that provisions a ACP instance on
 
 | Name | Description |
 |------|-------------|
-| <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | n/a |
-<!-- END_TF_DOCS -->Avinash_Bo@cloudshell:acp (eu-zurich-1)$ 
+| <a name="output_private_ip"></a> [private\_ip](#output\_private\_ip) | ACP Instance Private IP |
+
