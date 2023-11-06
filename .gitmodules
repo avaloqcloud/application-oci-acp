@@ -1,3 +1,0 @@
-[submodule "terraform-oci-compute"]
-	path = terraform-oci-compute
-	url = https://github.com/avaloqcloud/terraform-oci-compute
