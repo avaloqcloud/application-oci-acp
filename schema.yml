@@ -8,7 +8,6 @@ variableGroups:
   - title: "OCI(Oracle Cloud Infrastructure) details"
     variables:
       - compartment_ocid
-      - current_user_ocid
 
   - title: "ACP Configuration"
     variables:     
@@ -33,13 +32,8 @@ variables:
     required: true
     description: "Select the OCI compartment within your tenancy for instance creation"
     title: "Compartment"
-  current_user_ocid:
-    type: string
-    required: true
-    description: "Enter the user OCID associated with the OCI account"
-    title: "User"
   display_name:
-    type: string
+    type: avq:application:name
     minLength: 1
     maxLength: 255
     pattern: "^[a-z][a-zA-Z0-9]+$"
@@ -47,7 +41,7 @@ variables:
     description: "display name"
     required: true
   availability_domain:
-    type: oci:identity:availabilitydomain:name
+    type: avq:resident:availability_domain
     dependsOn:
       compartmentId: ${compartment_ocid}
     visible: complexExpression
