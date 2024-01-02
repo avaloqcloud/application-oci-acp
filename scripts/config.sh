@@ -22,3 +22,12 @@ su - oracle << RUN_AS_ORACLE
 /home/oracle/aaa/bin/aaadb.ksh -s "${sid_name}" -c restart
 /home/oracle/aaa/bin/aaadb.ksh -s "${sid_name}" -c start -o listener
 RUN_AS_ORACLE
+
+# Set the session level 5
+su - oracle << RUN_AS_ORACLE
+eval "$sid_name"
+sqlplus "k/k@${sid_name}.avaloq" <<EOC
+  exec k.base#.session_level(5);
+  commit;
+EOC
+RUN_AS_ORACLE
