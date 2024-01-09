@@ -21,6 +21,8 @@ variableGroups:
       - myVcn
       - subnetCompartment
       - private_subnet_id
+      - resource_tags  # Added resource_tags  variable here
+
 
   - title: "ACP Instnce Configuration"
     variables:     
@@ -94,6 +96,12 @@ variables:
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
   
+# added resource tags 
+  resource_tags:
+    type: map(string)
+    default: {}
+    description: "Specify the tag for the OCI resources"
+
   # instance_config.ocpus:
   #   type: number
   #   default: 6
