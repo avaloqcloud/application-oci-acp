@@ -45,3 +45,9 @@ variable "instance_config" {
     boot_volume_size_in_gbs = "500"
   }
 }
+
+variable "resource_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Specify the tag for the OCI resources"
+}

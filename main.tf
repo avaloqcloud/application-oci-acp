@@ -11,5 +11,5 @@ module "acp" {
     boot_volume_size_in_gbs = var.instance_config.boot_volume_size_in_gbs
     vm_name                 = "${var.display_name}"
     availabilitydomain      = var.availability_domain
-   
+    defined_tags             = var.resource_tags
 }
