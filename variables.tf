@@ -48,6 +48,8 @@ variable "instance_config" {
 
 variable "resource_tags" {
   type        = map(string)
-  default     = {}
+  default     = {
+    "CostTracking.avq-opr-stage"= "dev"
+  }
   description = "Specify the tag for the OCI resources"
 }
