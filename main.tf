@@ -1,5 +1,5 @@
 module "acp" {
-    source = "github.com/avaloqcloud/terraform-oci-compute?ref=bb95ffff36c5c771b21bd8795c5556b2515167c3"
+    source = "github.com/avaloqcloud/terraform-oci-compute?ref=b95ffff36c5c771b21bd8795c5556b2515167c3"
     compartment_ocid        = var.compartment_ocid
     cloud_init_script       = "${file("${path.module}/scripts/config.sh")}"
     subnet_id               = var.private_subnet_id
