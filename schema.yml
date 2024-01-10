@@ -93,7 +93,7 @@ variables:
       compartmentId: ${vcnCompartment}
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
-  
+
   # instance_config.ocpus:
   #   type: number
   #   default: 6
