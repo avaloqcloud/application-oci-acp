@@ -24,6 +24,12 @@ variable "display_name" {
   description = "Name of the ACP instance"
 }
 
+variable "private_ip" {
+  type = string
+  description = "A private IP address of your choice to assign to the VNIC. Must be an available IP address within the subnet's CIDR."
+  default = ""
+}
+
 variable "instance_image" {
   type = string
 }
@@ -42,7 +48,7 @@ variable "instance_config" {
   default = {
     ocpus                 = "6"
     memory_in_gbs        = "48"
-    boot_volume_size_in_gbs = "500"
+    boot_volume_size_in_gbs = "700"
   }
 }
 
