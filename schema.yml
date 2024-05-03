@@ -36,7 +36,7 @@ variables:
   display_name:
     type: avq:application:name
     minLength: 1
-    maxLength: 255
+    maxLength: 2558
     pattern: "^[a-z][a-zA-Z0-9]+$"
     title: display name
     description: "display name"

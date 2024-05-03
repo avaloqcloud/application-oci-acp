@@ -10,7 +10,7 @@ module "acp" {
     ocpus                   = var.instance_config.ocpus
     boot_volume_size_in_gbs = var.instance_config.boot_volume_size_in_gbs
     vm_name                 = "${var.display_name}"
-    private_ip              = var.private_ip
+    private_ip              = "${var.private_ip}"
     availabilitydomain      = var.availability_domain
     defined_tags            = var.resource_tags
 }
