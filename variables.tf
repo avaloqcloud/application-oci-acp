@@ -24,6 +24,12 @@ variable "display_name" {
   description = "Name of the ACP instance"
 }
 
+variable "private_ip" {
+  type = string
+  description = "A private IP address of your choice to assign to the VNIC. Must be an available IP address within the subnet's CIDR."
+  default = "10.10.50.143/24"
+}
+
 variable "instance_image" {
   type = string
 }

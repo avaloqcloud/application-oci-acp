@@ -15,6 +15,7 @@ variableGroups:
       - instance_image
       - instance_shape
       - display_name
+      - private_ip
       - availability_domain
       - useExistingVcn
       - vcnCompartment
