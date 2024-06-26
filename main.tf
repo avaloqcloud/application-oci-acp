@@ -12,6 +12,7 @@ module "acp" {
     boot_volume_size_in_gbs = var.instance_config.boot_volume_size_in_gbs
     vm_name                 = "${var.display_name}"
     private_ip              = var.private_ip
+    nsg_ids                 = var.nsg_ids
     availabilitydomain      = var.availability_domain
     defined_tags            = var.resource_tags
 }
