@@ -57,3 +57,9 @@ variable "resource_tags" {
   default     = {}
   description = "Specify the tag for the OCI resources in map(string)"
 }
+
+variable "nsg_ids" {
+  type        = list(string)
+  description = "List of Network Security Group IDs"
+  default     = []
+}

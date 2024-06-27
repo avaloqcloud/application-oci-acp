@@ -1,6 +1,5 @@
 module "acp" {
-
-    source = "github.com/avaloqcloud/terraform-oci-compute?ref=4292eb991382f097beccb2114e1f6b9e49abf717"
+    source = "github.com/avaloqcloud/terraform-oci-compute?ref=v0.1.4"
     compartment_ocid        = var.compartment_ocid
     cloud_init_script       = "${file("${path.module}/scripts/config.sh")}"
     subnet_id               = var.private_subnet_id
@@ -12,6 +11,7 @@ module "acp" {
     boot_volume_size_in_gbs = var.instance_config.boot_volume_size_in_gbs
     vm_name                 = "${var.display_name}"
     private_ip              = var.private_ip
+    nsg_ids                 = var.nsg_ids
     availabilitydomain      = var.availability_domain
     defined_tags            = var.resource_tags
 }
