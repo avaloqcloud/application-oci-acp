@@ -1,5 +1,5 @@
 module "acp" {
-    source = "github.com/avaloqcloud/terraform-oci-compute?ref=v0.1.4"
+    source = "github.com/avaloqcloud/terraform-oci-compute?ref=mek"
     compartment_ocid        = var.compartment_ocid
     cloud_init_script       = "${file("${path.module}/scripts/config.sh")}"
     subnet_id               = var.private_subnet_id
@@ -14,4 +14,5 @@ module "acp" {
     nsg_ids                 = var.nsg_ids
     availabilitydomain      = var.availability_domain
     defined_tags            = var.resource_tags
+    kms_key_id              = var.kms_key_id
 }

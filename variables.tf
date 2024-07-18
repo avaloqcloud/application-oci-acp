@@ -63,3 +63,9 @@ variable "nsg_ids" {
   description = "List of Network Security Group IDs"
   default     = []
 }
+
+variable "kms_key_id" {
+  type = string
+  description = "The OCID of the Vault service key to assign as the master encryption key for the boot volume."
+  default = ""
+}
