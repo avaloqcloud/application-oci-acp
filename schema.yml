@@ -22,6 +22,9 @@ variableGroups:
       - myVcn
       - subnetCompartment
       - private_subnet_id
+      - kmsVault
+      - kmsCompartment
+      - kms_key_id
 
   - title: "ACP Instnce Configuration"
     variables:     
@@ -95,8 +98,24 @@ variables:
       vcnId: ${myVcn}
     visible: ${useExistingVcn}
 
-  # instance_config.ocpus:
-  #   type: number
-  #   default: 6
-  #   minimum: 1
+  kmsCompartment:
+    type: oci:identity:compartment:id
+    default: ""
+
+  kmsVault:
+    type: oci:kms:vault:id
+    title: "Vault for KMS Key"
+    description: "vault"
+    default: ""
+    dependsOn:
+      compartmentId: ${kmsCompartment}
+
+  kms_key_id:
+    type: oci:kms:key:id
+    title: "KMS Key"
+    description: "KMS Key"
+    default: ""
+    dependsOn:
+      compartmentId: ${kmsCompartment}
+      vaultId: ${kmsVault}
 
