@@ -17,6 +17,7 @@ sed -i "s/\(Host\s*=\s*\)[0-9a-z\.]\+\(.*\)/\1${escaped_ip}\2/" "${tnsnames_file
 
 # SID Name
 sid_name=$(grep -E  -o "SID_NAME= [a-z0-9]+" "${listener_file_path}" | sed -r "s/SID_NAME= //")
+echo "$new_ip $sid_name.swprod1.migration.oraclevcn.com  $sid_name" >> /etc/hosts
 
 su - oracle << RUN_AS_ORACLE
 /home/oracle/aaa/bin/aaadb.ksh -s "${sid_name}" -c restart
